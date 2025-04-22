@@ -1,11 +1,12 @@
-import { StyleSheet } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-// import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "../src/screens/HomeScreen";
 import CategoryScreen from "../src/screens/CategoryScreen";
 import SplashScreen from "../src/screens/SplashScreen";
-import HeaderSearch from '../src/components/Header'
+import HeaderSearch from "../src/components/Header";
+import SearchResultsScreen from "../src/screens/SearchResultsScreen";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -14,13 +15,26 @@ const DrawerNavigator = () => (
   <Drawer.Navigator
     initialRouteName="Home"
     screenOptions={{ headerShown: true }}
+    drawerContentOptions={{
+    activeTintColor: '#e91e63',
+    // itemStyle: { marginVertical: 5 },
+  }}
   >
     <Drawer.Screen
       name="Home"
       component={HomeScreen}
-      options={({ navigations }) => ({
-        headerRight: () => <HeaderSearch />,
-        title: "IXSN",
+      options={({ route }) => ({
+        headerTitle: () => (
+          <Pressable onPress={route.params?.onScrollToTop}>
+            <Text style={styles.headerTitle}>IXSN</Text>
+          </Pressable>
+        ),
+        // headerRight: () => <HeaderSearch />, 
+        drawerLabel: "Home",
+        headerTitleStyle: {
+          fontSize: 20,
+          marginLeft: 10,
+        },
       })}
     />
     <Drawer.Screen
@@ -60,6 +74,7 @@ const MainStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Splash" component={SplashScreen} />
     <Stack.Screen name="Home" component={DrawerNavigator} />
+    <Stack.Screen name="SearchResults" component={SearchResultsScreen} />
   </Stack.Navigator>
 );
 
@@ -67,10 +82,14 @@ export default function Index() {
   return (
     // <NavigationContainer>
       <MainStack />
-    // </NavigationContainer>
+    // </NavigationContainer> 
   );
 }
 
 const styles = StyleSheet.create({
-  // Remove unused styles or apply them in a screen if needed
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#333",
+  },
 });

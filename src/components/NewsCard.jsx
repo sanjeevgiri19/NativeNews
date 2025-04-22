@@ -7,28 +7,25 @@ import {
   Pressable,
   Modal,
   Linking,
+  ScrollView,
 } from "react-native";
 import { BlurView } from "expo-blur";
-import { Link } from "expo-router";
 
 const NewsCard = ({ news }) => {
-  const [selectedNews, setSelectedNews] = useState(null); // State to manage the selected news
-  const [modalVisible, setModalVisible] = useState(false); // State to manage modal visibility
+  const [modalVisible, setModalVisible] = useState(false);
 
   const openModal = () => {
-    setSelectedNews(news);
-    setModalVisible(true); // Show modal
+    setModalVisible(true);
   };
 
   const closeModal = () => {
-    setModalVisible(false); // Hide modal
-    setSelectedNews(null);
+    setModalVisible(false);
   };
 
-  console.log("selected news:", selectedNews);
-
-  const openNewsSource = async (news) => {
-    await Linking.openURL(news.url);
+  const openNewsSource = async () => {
+    if (news.url) {
+      await Linking.openURL(news.url);
+    }
   };
 
   return (
@@ -54,58 +51,65 @@ const NewsCard = ({ news }) => {
               ? `${news.description.slice(0, 120)}...`
               : news.description
             : "No description available."}
-          {/* <Pressable onPress={openNewsSource}>
-            <Text style={styles.readMore}>...Read more</Text>
-          </Pressable> */}
-          <Link style={styles.readMore} href={news.url}> ...Read More</Link>
+          <Text style={styles.readMore} onPress={openNewsSource}>
+            {" "}
+            ...Read More
+          </Text>
         </Text>
       </Pressable>
 
-      {/* Modal Implementation */}
-      {selectedNews && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={closeModal}
-        >
-          <View style={styles.modalContainer}>
-            <BlurView
-              style={StyleSheet.absoluteFill}
-              tint="dark"
-              intensity={30}
-              experimentalBlurMethod="dimezisBlurView" // Optional for better Android support
-            />
+      {/* MODAL  */}
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalContainer}>
+          <BlurView
+            style={StyleSheet.absoluteFill}
+            tint="dark"
+            intensity={30}
+            experimentalBlurMethod="dimezisBlurView"
+          />
+          <ScrollView>
             <View style={styles.modalContent}>
               <Pressable onPress={closeModal} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>X</Text>
               </Pressable>
-
-              {selectedNews.urlToImage ? (
+              {news.urlToImage ? (
                 <Image
                   style={styles.modalImage}
-                  source={{ uri: selectedNews.urlToImage }}
+                  source={{ uri: news.urlToImage }}
                 />
               ) : (
                 <View style={styles.placeholder}>
                   <Text style={styles.placeholderText}>No Image Available</Text>
                 </View>
               )}
-
-              <Text style={styles.modalTitle}>{selectedNews.title}</Text>
+              <Text style={styles.modalTitle}>
+                {news.title || "No title available"}
+              </Text>
               <Text style={styles.modalDescription}>
-                {selectedNews.description || "No description available."}
+                {news.description || "No description available."}
+              </Text>
+              <Text style={styles.modalPublished}>
+                Published: {news.publishedAt || "Unknown"}
               </Text>
 
               <View style={styles.sourceContainer}>
                 <Text style={styles.sourceText}>
-                  Source: {selectedNews.source.name}
+                  Source: {news.source?.name || "Unknown"}
                 </Text>
               </View>
+              <Pressable style={styles.readFullButton} onPress={openNewsSource}>
+                <Text style={styles.readFullButtonText}>Read Full Article</Text>
+              </Pressable>
             </View>
-          </View>
-        </Modal>
-      )}
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -114,7 +118,6 @@ export default NewsCard;
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
     backgroundColor: "#fff",
     borderRadius: 10,
     overflow: "hidden",
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   image: {
-    width: "90%",
+    width: "100%",
     height: 200,
     resizeMode: "cover",
   },
@@ -165,18 +168,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.6)",
     justifyContent: "center",
-    alignItems: "center",
-    overflow: "scroll",
   },
   modalContent: {
     backgroundColor: "#fff",
     borderRadius: 10,
     paddingVertical: 20,
     paddingHorizontal: 26,
-    width: "94%",
-    overflow: "hidden",
+    margin: 16,
     alignItems: "center",
-    height: 400,
   },
   closeButton: {
     position: "absolute",
@@ -185,25 +184,37 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     fontSize: 20,
-    color: "#007B00",
+    color: "#007BFF",
     fontWeight: "bold",
   },
   modalImage: {
     width: "100%",
     height: 200,
     resizeMode: "contain",
-    // marginBottom: 6,
+    marginBottom: 10,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 8,
+    marginBottom: 10,
     color: "#333",
+    textAlign: "center",
   },
   modalDescription: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "left",
+    marginBottom: 10,
+  },
+  modalAuthor: {
     fontSize: 14,
     color: "#666",
-    textAlign: "center",
+    marginBottom: 5,
+  },
+  modalPublished: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 10,
   },
   sourceContainer: {
     alignSelf: "flex-end",
@@ -217,6 +228,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#007B00",
     fontStyle: "italic",
-    textAlign: "right",
+  },
+  readFullButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  readFullButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

@@ -21,41 +21,42 @@ const Drawer = createDrawerNavigator();
 // };
 
 const DrawerNavigator = () => {
-  <Drawer.Navigator>
-    {/* <Drawer.Screen name="Home" component={HomeScreen} /> */}
-    {/* <Drawer.Screen name="Splash" component={SplashScreen} /> */}
-    <Drawer.Screen name="Home" component={HomeScreen} />
-    <Drawer.Screen
-      name="Sports"
-      component={CategoryScreen}
-      initialParams={{ category: "sports" }}
-    />
-    <Drawer.Screen
-      name="Business"
-      component={CategoryScreen}
-      initialParams={{ category: "business" }}
-    />
-    <Drawer.Screen
-      name="Entertainment"
-      component={CategoryScreen}
-      initialParams={{ category: "entertainment" }}
-    />
-    <Drawer.Screen
-      name="Science"
-      component={CategoryScreen}
-      initialParams={{ category: "science" }}
-    />
-    <Drawer.Screen
-      name="Technology"
-      component={CategoryScreen}
-      initialParams={{ category: "technology" }}
-    />
-    <Drawer.Screen
-      name="Health"
-      component={CategoryScreen}
-      initialParams={{ category: "health" }}
-    />
-  </Drawer.Navigator>;
+  return (
+    <Drawer.Navigator>
+      {/* <Drawer.Screen name="Splash" component={SplashScreen} /> */}
+      <Drawer.Screen name="Home" component={HomeScreen} />
+      <Drawer.Screen
+        name="Sports"
+        component={CategoryScreen}
+        initialParams={{ category: "sports" }}
+      />
+      <Drawer.Screen
+        name="Business"
+        component={CategoryScreen}
+        initialParams={{ category: "business" }}
+      />
+      <Drawer.Screen
+        name="Entertainment"
+        component={CategoryScreen}
+        initialParams={{ category: "entertainment" }}
+      />
+      <Drawer.Screen
+        name="Science"
+        component={CategoryScreen}
+        initialParams={{ category: "science" }}
+      />
+      <Drawer.Screen
+        name="Technology"
+        component={CategoryScreen}
+        initialParams={{ category: "technology" }}
+      />
+      <Drawer.Screen
+        name="Health"
+        component={CategoryScreen}
+        initialParams={{ category: "health" }}
+      />
+    </Drawer.Navigator>
+  );
 };
 
 export default DrawerNavigator;

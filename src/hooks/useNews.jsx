@@ -1,27 +1,54 @@
-const useNews = () => {
-  const API_KEY = "XXX";
-  const COUNTRY = "us";
-  const [news, setNews] = useState([]);
-  const [loading, setLoading] = useState(true);
+import axios from "axios";
+import { useEffect, useState } from "react";
+import debounce from "lodash.debounce";
+
+const useNews = (query) => {
+  const API_KEY = "fc16b7d092044241b6f08c7eae5cddf3";
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchNews();
-  }, []);
+    
+    const fetchNews = debounce(async (searchQuery) => {
+      if (!searchQuery.trim()) {
+        setArticles([]);
+        setLoading(false);
+        setError(null);
+        return;
+      }
 
-  const fetchNews = async () => {
-    const newsUrl = `https://newsapi.org/v2/top-headlines?country=${COUNTRY}&apiKey=${API_KEY}`;
-    try {
-      const res = await axios.get(newsUrl);
-      console.log(res.data);
+      setLoading(true);
+      setError(null);
 
-      setNews(res.data);
-    } catch (error) {
-      console.error("Error fetching news:", error);
-      setError(error);
-    }
-  };
-  return { news, loading, error };
+      try {
+        const encodedQuery = encodeURIComponent(searchQuery.trim());
+        const response = await axios.get(
+          `https://newsapi.org/v2/everything?q=${encodedQuery}&apiKey=${API_KEY}&language=en&sortBy=publishedAt`
+        );
+        // console.log("response in usenews:", response);
+        
+        setArticles(response.data.articles || []);
+      } catch (err) {
+        console.error("News API error:", err.response?.data || err.message);
+
+        setError(
+          err.response?.data?.message || err.message || "Failed to fetch news"
+        );
+      } finally {
+        setLoading(false);
+      }
+    }, 500);
+
+    fetchNews(query);
+
+    // Cleanup: Cancel debounce on unmount or query change
+    return () => {
+      fetchNews.cancel();
+    };
+  }, [query]);
+
+  return { articles, loading, error };
 };
 
 export default useNews;

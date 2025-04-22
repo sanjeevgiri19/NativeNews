@@ -1,22 +1,63 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+// src/components/Header.jsx
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import useNews from "../hooks/useNews"; 
+import NewsCard from "./NewsCard";
+import { useNavigation } from "@react-navigation/native";
 
-const HeaderSearch = () => {
+
+const HeaderSearch = ({onSearch}) => {
+  const navigation = useNavigation()
   const [search, setSearch] = useState("");
-  console.log(search);
-  
+  const { articles, loading, error } = useNews(search); 
+  // console.log("articles", articles);
+
+
+    // const handleSearch = () => {
+    //   if (search.trim()) {
+    //     navigation.navigate("SearchResults", { query: search });
+    //   }
+    // };
+
+    const handleSearch = (text) => {
+      setSearch(text)
+      onSearch(text)
+    }
 
   return (
     <View style={styles.container}>
-      <Ionicons name="search" size={20} color="black" />
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search"
-        // value={search}
-        onChange={(text) => setSearch(text)}
-        placeholderTextColor="#aaa"
-      />
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="black" />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search news"
+          value={search}
+          onChangeText={handleSearch}
+          // onSubmitEditing={handleSearch}
+          placeholderTextColor="#aaa"
+        />
+      </View>
+      {/* {loading && <ActivityIndicator size="small" color="#0000ff" />} */}
+      {/* {error && <Text style={styles.errorText}>{error}</Text>} */}
+      {/* <FlatList
+        // style={styles.flatListItems}
+        data={articles}
+        keyExtractor={(item) => item.url} // Use URL as key
+        // renderItem={({ item }) => (
+        //   <Text style={styles.itemText}>{item.title}</Text> // Display article title
+        // )}
+        renderItem={({ item }) => <NewsCard news={item} />}
+        showsVerticalScrollIndicator={false}
+      /> */}
+      {/* <NewsCard news={articles} /> */}
     </View>
   );
 };
@@ -25,23 +66,34 @@ export default HeaderSearch;
 
 const styles = StyleSheet.create({
   container: {
+    // flex: 1,
+    // backgroundColor: "#f5f5f5",
+    paddingTop: 10,
+    paddingHorizontal: 10,
+    // paddingVertical: 10,
+  },
+  searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    // marginRight: 10,
     backgroundColor: "#fff",
     width: "90%",
-    marginHorizontal: 10,
+    marginHorizontal: 16,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    paddingHorizontal: 4,
+    paddingHorizontal: 8,
+    marginBottom: 10,
   },
   searchInput: {
     marginLeft: 5,
-    // width: 100,
-    // height: 40,
-    width: '90%',
+    width: "90%",
     fontSize: 16,
     color: "#000",
+    paddingVertical: 8,
+  },
+  errorText: {
+    color: "red",
+    padding: 10,
+    textAlign: "center",
   },
 });

@@ -5,50 +5,87 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import NewsCard from "../components/NewsCard";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-// import {NEWS_API_KEY} from '@env'
+import HeaderSearch from "../components/Header";
+import NewsCard from "../components/NewsCard";
+import useNews from "../hooks/useNews";
+import axios from "axios";
+// import { NEWS_API_KEY } from "@env";
 
-const HomeScreen = () => {
+const HomeScreen = ({ route, navigation }) => {
   const API_KEY = "fc16b7d092044241b6f08c7eae5cddf3";
   const COUNTRY = "us";
   const [news, setNews] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const {
+    articles: searchArticles,
+    loading: searchLoading,
+    error: searchError,
+  } = useNews(searchQuery);
+  const flatListRef = useRef(null);
 
   useEffect(() => {
-    fetchNews();
-  }, []);
+    if (!searchQuery.trim()) {
+      fetchTopHeadlines();
+    }
+    // Set onScrollToTop in navigation params
+    navigation.setParams({
+      onScrollToTop: () => {
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+      },
+    });
+  }, [searchQuery, navigation]);
 
-  const fetchNews = async () => {
+  const fetchTopHeadlines = async () => {
     const newsUrl = `https://newsapi.org/v2/top-headlines?country=${COUNTRY}&apiKey=${API_KEY}`;
     try {
+      setError(null);
       const res = await axios.get(newsUrl);
-      // console.log(res.data);
-      setNews(res.data.articles);
+      // console.log("response:", res);
+
+      setNews(res.data.articles || []);
     } catch (error) {
-      console.error("Error fetching news:", error);
-      console.error("Error fetching news:", error.message);
-      console.log("error", error.message);
+      setError(error.message || "Failed to fetch top headlines");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
+  const displayArticles = searchQuery.trim() ? searchArticles : news;
+  const displayLoading = searchQuery.trim() ? searchLoading : loading;
+  const displayError = searchQuery.trim() ? searchError : error;
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <Text
-          style={styles.CategoryTitle}
-        >{`Top Headlines in ${COUNTRY.toUpperCase()}`}</Text>
-        {loading ? (
+        <HeaderSearch onSearch={handleSearch} />
+        <Text style={styles.CategoryTitle}>
+          {searchQuery.trim()
+            ? `Search Results for "${searchQuery}"`
+            : `Top Headlines in ${COUNTRY.toUpperCase()}`}
+        </Text>
+        {displayLoading ? (
           <ActivityIndicator size="large" color="#ff0000" />
+        ) : displayError ? (
+          <Text style={styles.errorText}>{displayError}</Text>
+        ) : displayArticles.length === 0 ? (
+          <Text style={styles.noResultsText}>No results found</Text>
         ) : (
           <FlatList
-            data={news}
-            keyExtractor={(item, index) => index.toString()}
+            ref={flatListRef}
+            data={displayArticles}
+            keyExtractor={(item) => item.url}
             renderItem={({ item }) => <NewsCard news={item} />}
+            showsVerticalScrollIndicator={false}
+            initialNumToRender={10}
+            windowSize={5}
           />
         )}
       </View>
@@ -62,15 +99,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
   },
   CategoryTitle: {
-    fontSize: 30,
+    fontSize: 24,
     marginVertical: 10,
-    backgroundColor: "#eee",
-    paddingHorizontal: 25,
+    paddingHorizontal: 16,
     fontWeight: "bold",
-    paddingVertical: 10,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    padding: 10,
+  },
+  noResultsText: {
+    textAlign: "center",
+    padding: 20,
+    fontSize: 16,
+    color: "#666",
   },
 });
