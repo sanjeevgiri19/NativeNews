@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import debounce from "lodash.debounce";
+import { NEWS_API_KEY } from "@env";
 
 const useNews = (query) => {
-  const API_KEY = "fc16b7d092044241b6f08c7eae5cddf3";
+  const API_KEY = NEWS_API_KEY;
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

@@ -1,4 +1,3 @@
-// npm i lottie-react-native
 
 // import LottieView from "lottie-react-native";
 import LottieView from 'lottie-react-native'

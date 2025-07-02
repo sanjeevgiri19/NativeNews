@@ -11,10 +11,10 @@ import HeaderSearch from "../components/Header";
 import NewsCard from "../components/NewsCard";
 import useNews from "../hooks/useNews";
 import axios from "axios";
-// import { NEWS_API_KEY } from "@env";
+import { NEWS_API_KEY } from "@env";
 
 const HomeScreen = ({ route, navigation }) => {
-  const API_KEY = "fc16b7d092044241b6f08c7eae5cddf3";
+  const API_KEY = NEWS_API_KEY;
   const COUNTRY = "us";
   const [news, setNews] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,7 +31,6 @@ const HomeScreen = ({ route, navigation }) => {
     if (!searchQuery.trim()) {
       fetchTopHeadlines();
     }
-    // Set onScrollToTop in navigation params
     navigation.setParams({
       onScrollToTop: () => {
         flatListRef.current?.scrollToOffset({ offset: 0, animated: true });

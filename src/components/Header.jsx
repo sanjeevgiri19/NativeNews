@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import {
   StyleSheet,
   Text,
@@ -45,19 +44,7 @@ const HeaderSearch = ({onSearch}) => {
           placeholderTextColor="#aaa"
         />
       </View>
-      {/* {loading && <ActivityIndicator size="small" color="#0000ff" />} */}
-      {/* {error && <Text style={styles.errorText}>{error}</Text>} */}
-      {/* <FlatList
-        // style={styles.flatListItems}
-        data={articles}
-        keyExtractor={(item) => item.url} // Use URL as key
-        // renderItem={({ item }) => (
-        //   <Text style={styles.itemText}>{item.title}</Text> // Display article title
-        // )}
-        renderItem={({ item }) => <NewsCard news={item} />}
-        showsVerticalScrollIndicator={false}
-      /> */}
-      {/* <NewsCard news={articles} /> */}
+      
     </View>
   );
 };

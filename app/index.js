@@ -80,9 +80,9 @@ const MainStack = () => (
 
 export default function Index() {
   return (
-    // <NavigationContainer>
+    <NavigationContainer>
       <MainStack />
-    // </NavigationContainer> 
+    </NavigationContainer> 
   );
 }
 

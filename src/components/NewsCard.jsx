@@ -58,7 +58,6 @@ const NewsCard = ({ news }) => {
         </Text>
       </Pressable>
 
-      {/* MODAL  */}
 
       <Modal
         animationType="slide"

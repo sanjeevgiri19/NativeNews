@@ -8,25 +8,24 @@ import {
   useColorScheme,
 } from "react-native";
 import NewsCard from "../components/NewsCard";
-// import {NEWS_API_KEY} from '@env'
+import {NEWS_API_KEY} from '@env'
 
-const API_KEY = "fc16b7d092044241b6f08c7eae5cddf3"; // Replace with your News API Key
+const API_KEY = NEWS_API_KEY;
 
 const CategoryScreen = ({ route }) => {
   const { category } = route.params;
-  const colorScheme = useColorScheme(); // For dark mode support
+  const colorScheme = useColorScheme();
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   
 
   useEffect(() => {
     fetchNews();
-  }, [category]); // Re-fetch when category changes
+  }, [category]);
 
   const fetchNews = async () => {
     setLoading(true);
     try {
-      // Corrected News API URL
       const newsURL = `https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${API_KEY}`;
       const response = await fetch(newsURL);
       const data = await response.json();
@@ -95,7 +94,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F3F4F6", // Light gray for light mode
+    backgroundColor: "#F3F4F6",
   },
   title: {
     fontSize: 24,
